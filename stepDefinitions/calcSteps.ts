@@ -4,53 +4,58 @@
  * gherkin language syntax's - Given, When, Then
  */
 
-const {Given, When, Then} = require('cucumber');
-import {expect} from 'chai';
-import {CalculatorPageObject} from '../pages/calcPage';
+const { Given, When, Then } = require('cucumber');
+import { expect } from 'chai';
+import { CalculatorPageObject } from '../pages/calcPage';
 
 const calc: CalculatorPageObject = new CalculatorPageObject();
 
-Given(/^I am on my mobile calculator app$/, () => {
-    const title = browser.getText('android.widget.TextView');
-    expect(title).to.equal('Calculator');
+Given(/^I am on my mobile calculator app$/, async () => {
+  const textView = await browser.$('android.widget.TextView');
+  const title = await textView.getText();
+  expect(title).to.equal('Calculator');
 });
 
-When(/^I add "(.*?)" and "(.*?)"$/,  (num1: string, num2: string) => {
-    browser.click(calc.calcDigitSelector(num1));
-    browser.click(calc.addOperator);
-    browser.click(calc.calcDigitSelector(num2));
-    browser.click(calc.equalOperator);
+When(/^I add "(.*?)" and "(.*?)"$/, async (num1: string, num2: string) => {
+  (await calc.selectCalcDigit(num1)).click();
+  (await calc.addOperator).click();
+  (await calc.selectCalcDigit(num2)).click();
+  (await calc.equalOperator).click();
 });
 
-When(/^I subtract "(.*?)" from "(.*?)"$/,  (num1: string, num2: string) => {
-    browser.click(calc.calcDigitSelector(num1));
-    browser.click(calc.subtractOperator);
-    browser.click(calc.calcDigitSelector(num2));
-    browser.click(calc.equalOperator);
+When(/^I subtract "(.*?)" from "(.*?)"$/, async (num1: string, num2: string) => {
+  (await calc.selectCalcDigit(num1)).click();
+  (await calc.subtractOperator).click();
+  (await calc.selectCalcDigit(num2)).click();
+  (await calc.equalOperator).click();
 });
 
-When(/^I multiply "(.*?)" with "(.*?)"$/,  (num1: string, num2: string) => {
-    browser.click(calc.calcDigitSelector(num1));
-    browser.click(calc.multiplyOperator);
-    browser.click(calc.calcDigitSelector(num2));
-    browser.click(calc.equalOperator);
+When(/^I multiply "(.*?)" with "(.*?)"$/, async (num1: string, num2: string) => {
+  (await calc.selectCalcDigit(num1)).click();
+  (await calc.multiplyOperator).click();
+  (await calc.selectCalcDigit(num2)).click();
+  (await calc.equalOperator).click();
 });
 
-When(/^I divide "(.*?)" with "(.*?)"$/,  (num1: string, num2: string) => {
-    browser.click(calc.calcDigitSelector(num1));
-    browser.click(calc.divisionOperator);
-    browser.click(calc.calcDigitSelector(num2));
-    browser.click(calc.equalOperator);
+When(/^I divide "(.*?)" with "(.*?)"$/, async (num1: string) => {
+  (await calc.selectCalcDigit(num1)).click();
+  (await calc.divisionOperator).click();
+  (await calc.selectCalcDigit(num1)).click();
+  (await calc.equalOperator).click();
 });
 
-When(/^I click on AC button$/, () => {
-    browser.click(calc.clearOperator);
+When(/^I click on AC button$/, async () => {
+  (await calc.clearOperator).click();
 });
 
-Then(/^the result "(.*?)" should be displayed$/, (result: string) => {
-    return expect(browser.getText(calc.outputText)).to.contain(result);
+Then(/^the result "(.*?)" should be displayed$/, async (result: string) => {
+  const outputTextOperator = await calc.outputTextOperator;
+  const outputText = await outputTextOperator.getText();
+  return expect(outputText).to.contain(result);
 });
 
-Then(/^the result should be cleared$/, () => {
-    return expect(browser.getText(calc.outputText)).to.equal('');
+Then(/^the result should be cleared$/, async () => {
+  const outputTextOperator = await calc.outputTextOperator;
+  const outputText = await outputTextOperator.getText();
+  return expect(outputText).to.equal('');
 });

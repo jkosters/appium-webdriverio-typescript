@@ -1,6 +1,6 @@
 /**
  * WebdriverIO config file to run tests on native mobile apps.
- * Config file helps us configure all the settings and setup environments 
+ * Config file helps us configure all the settings and setup environments
  * to run our tests.
  */
 
@@ -13,13 +13,13 @@ const commandTimeout = 30 * 60000;
 exports.config = {
     debug: false,
     specs: [
-        './features/calculator.feature',
+        './features/appium.feature',
     ],
 
     reporters: ['allure','spec'],
     reporterOptions: {
         allure: {
-            outputDir: './allure-results/'
+            outputDir: 'allure-results'
         }
     },
 
@@ -30,14 +30,10 @@ exports.config = {
 
     capabilities: [
         {
-            appiumVersion: '1.8.1',                 // Appium module version
-            browserName: '',                        // browser name is empty for native apps
-            platformName: 'Android',
-            app: './app/LGCalculator.apk',          // Path to your native app
-            appPackage: 'com.android.calculator2',  // Package name of your app
-            appActivity: 'com.android.calculator2.Calculator', // App activity of the app
-            platformVersion: '7.1.1',              // Android platform version of the device
-            deviceName: 'THF755e0384',              // device name of the mobile device
+            appiumVersion: '1.13.0',
+            app: 'C:\\Program Files\\WindowsApps\\Microsoft.WindowsCalculator_10.1903.21.0_x64__8wekyb3d8bbwe\\Calculator.exe',          // Path to your native app
+            platformName: 'Windows',
+            deviceName: 'WindowsPC', // device name is mandatory
             waitforTimeout: waitforTimeout,
             commandTimeout: commandTimeout,
             newCommandTimeout: 30 * 60000,
@@ -48,7 +44,7 @@ exports.config = {
     appium: {
         waitStartTime: 6000,
         waitforTimeout: waitforTimeout,
-        command: 'appium',
+        command: 'appium.cmd',
         logFileName: 'appium.log',
         args: {
             address: host,
@@ -64,28 +60,32 @@ exports.config = {
      */
     logLevel: 'silent',
     coloredLogs: true,
-    framework: 'cucumber',          // cucumber framework specified 
+    framework: 'cucumber',          // cucumber framework specified
     cucumberOpts: {
         compiler: ['ts:ts-node/register'],
         backtrace: true,
         failFast: false,
         timeout: 5 * 60 * 60000,
-        require: ['./stepDefinitions/calcSteps.ts']      // importing/requiring step definition files
+        require: ['./stepDefinitions/appiumSteps.ts']   // importing/requiring step definition files
     },
 
     /**
-     * hooks help us execute the repeatitive and common utilities 
-     * of the project.
+     * hooks
      */
     onPrepare: function () {
-        console.log('<<< NATIVE APP TESTS STARTED >>>');
+        console.log('<<< BROWSER TESTS STARTED >>>');
+    },
+
+    before: function (capabilities, specs) {
+        browser.url(this.baseUrl);
     },
 
     afterScenario: function (scenario) {
-        browser.screenshot();
-     },
+       browser.screenshot();
+    },
 
     onComplete: function () {
+
         console.log('<<< TESTING FINISHED >>>');
     }
 

@@ -5,7 +5,7 @@
  */
 
 const host = '127.0.0.1';   // default appium host
-const port = 8888;          // default appium port
+const port = 4730;          // default appium port
 
 const waitforTimeout = 30 * 60000;
 const commandTimeout = 30 * 60000;
@@ -13,13 +13,13 @@ const commandTimeout = 30 * 60000;
 exports.config = {
     debug: false,
     specs: [
-        './features/appium.feature',
+        './features/calculator.feature',
     ],
 
     reporters: ['allure','spec'],
     reporterOptions: {
         allure: {
-            outputDir: 'allure-results'
+            outputDir: './allure-results/'
         }
     },
 
@@ -28,15 +28,16 @@ exports.config = {
 
     maxInstances: 1,
 
-    baseUrl: 'http://www.google.com',
-
     capabilities: [
         {
-            appiumVersion: '1.13.0',
-            browserName: 'chrome',  // browser name should be specified
-            platformName: 'Windows 10', // OS platform
-            // platformVersion: '1.0',
-            // deviceName: 'WindowsPC', // device name is mandatory
+            appiumVersion: '1.13.0',                 // Appium module version
+            browserName: '',                        // browser name is empty for native apps
+            platformName: 'Android',
+            app: './app/LGCalculator.apk',          // Path to your native app
+            appPackage: 'com.android.calculator2',  // Package name of your app
+            appActivity: 'com.android.calculator2.Calculator', // App activity of the app
+            platformVersion: '7.1.1',              // Android platform version of the device
+            deviceName: 'THF755e0384',              // device name of the mobile device
             waitforTimeout: waitforTimeout,
             commandTimeout: commandTimeout,
             newCommandTimeout: 30 * 60000,
@@ -47,7 +48,7 @@ exports.config = {
     appium: {
         waitStartTime: 6000,
         waitforTimeout: waitforTimeout,
-        command: 'appium.cmd',
+        command: 'appium',
         logFileName: 'appium.log',
         args: {
             address: host,
@@ -69,26 +70,22 @@ exports.config = {
         backtrace: true,
         failFast: false,
         timeout: 5 * 60 * 60000,
-        require: ['./stepDefinitions/appiumSteps.ts']   // importing/requiring step definition files
+        require: ['./stepDefinitions/calcSteps.ts']      // importing/requiring step definition files
     },
 
     /**
-     * hooks
+     * hooks help us execute the repeatitive and common utilities
+     * of the project.
      */
     onPrepare: function () {
-        console.log('<<< BROWSER TESTS STARTED >>>');
-    },
-
-    before: function (capabilities, specs) {
-        browser.url(this.baseUrl);
+        console.log('<<< NATIVE APP TESTS STARTED >>>');
     },
 
     afterScenario: function (scenario) {
-       browser.screenshot();
-    },
+        browser.screenshot();
+     },
 
     onComplete: function () {
-
         console.log('<<< TESTING FINISHED >>>');
     }
 
